@@ -17,6 +17,30 @@ Do **not** call epithelial/lineage cells malignant because they express lineage 
 
 This skill is dataset-agnostic. Methods and gates are fixed. Paths, column names, spike donors, and species are **inputs to resolve**, not constants.
 
+Run the packaged functions; do not reimplement the engines in a notebook.
+
+```text
+scripts/run_malignant_id.py
+scripts/malignant_id/
+  contract.py        # resolve_contract / validate_contract
+  environment.py     # capture_environment → environment.json
+  pack.py            # Phase 00 pack_patient_runs
+  scevan_cna.py      # Phase 01 A1/A2
+  infercnv_votes.py  # Phase 02 B1/B2
+  labels.py          # Phase 03 hc/probable
+  qc.py              # Phase 04 fail-closed QC
+  run.py             # orchestrator, stops after QC
+```
+
+```bash
+python scripts/run_malignant_id.py --h5ad PATH.h5ad --outdir RUNDIR \
+  --organism human --genome hg38 --patient-key patient_uid \
+  --lineage-key cell_type_plot --target-categories EPI \
+  --scevan-root "$SCEVAN_ROOT"
+```
+
+Missing contract fields write `awaiting_user_input.json` and stop. QC failure does not write `Cancer cell` into a new h5ad.
+
 ## When to use
 
 Use when the user wants:
@@ -112,12 +136,7 @@ Hard limits when using the pixi box:
 - each process `OMP/OPENBLAS/MKL/NUMBA/RAYON_NUM_THREADS=1`
 - long jobs: `nohup ... > log 2>&1 &`
 
-Stage scripts on the reference box (adapt paths to `$SCEVAN_ROOT`):
-
-- Stage1: `tasks/scevan/src/run_v2_cna.py`
-- Stage2: `tasks/scevan/src/run_v2_infercnv.py`
-
-Do not hard-code `/home/y413007/...` in a new-dataset run.
+The Python package wraps those engines. Call `malignant_id.run.run_malignant_id(...)` or the CLI above. Do not hard-code `/home/y413007/...` in a new-dataset run. Each run writes `environment.json` (python, packages, SCEVAN git, pixi.lock hash, thread caps) and `run_manifest.json`.
 
 ## Phase 00 — inspect and pack
 

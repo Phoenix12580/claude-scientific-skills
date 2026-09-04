@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "malignant-id-dual-cnv dataset contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "h5ad_path",
+    "organism",
+    "genome",
+    "sample_key",
+    "patient_key",
+    "lineage_key",
+    "target_categories",
+    "tme_categories",
+    "spike_source",
+    "normal_sample_flag",
+    "keep_probable"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "h5ad_path": { "type": "string", "minLength": 1 },
+    "organism": { "enum": ["human", "mouse"] },
+    "genome": { "enum": ["hg38", "mm10", "mm39"] },
+    "sample_key": { "type": "string", "minLength": 1 },
+    "patient_key": { "type": "string", "minLength": 1 },
+    "lineage_key": { "type": "string", "minLength": 1 },
+    "target_categories": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "tme_categories": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "spike_source": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": { "enum": ["in_adata_normals", "external_atlas", "user_barcodes"] },
+        "normal_patient_values": { "type": "array", "items": { "type": "string" } },
+        "normal_sample_values": { "type": "array", "items": { "type": "string" } },
+        "atlas_h5ad": { "type": "string" },
+        "atlas_patient_key": { "type": "string" },
+        "atlas_lineage_key": { "type": "string" },
+        "atlas_target_categories": { "type": "array", "items": { "type": "string" } },
+        "barcode_file": { "type": "string" },
+        "max_cells_per_donor": { "type": "integer", "minimum": 1, "default": 500 },
+        "min_donors": { "type": "integer", "minimum": 1, "default": 2 }
+      }
+    },
+    "normal_sample_flag": {
+      "description": "obs column/values for known normal samples, or the string none",
+      "oneOf": [
+        { "const": "none" },
+        {
+          "type": "object",
+          "required": ["column", "values"],
+          "properties": {
+            "column": { "type": "string" },
+            "values": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      ]
+    },
+    "keep_probable": { "type": "boolean" },
+    "condition_key": { "type": "string" },
+    "dataset_key": { "type": "string" },
+    "min_target_cells_per_patient": { "type": "integer", "minimum": 1, "default": 200 },
+    "quantiles": {
+      "type": "object",
+      "properties": {
+        "a2": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.99 },
+        "b1": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.99 },
+        "b2": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.99 }
+      }
+    }
+  },
+  "additionalProperties": false
+}
