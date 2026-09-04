@@ -136,7 +136,13 @@ Hard limits when using the pixi box:
 - each process `OMP/OPENBLAS/MKL/NUMBA/RAYON_NUM_THREADS=1`
 - long jobs: `nohup ... > log 2>&1 &`
 
-The Python package wraps those engines. Call `malignant_id.run.run_malignant_id(...)` or the CLI above. Do not hard-code `/home/y413007/...` in a new-dataset run. Each run writes `environment.json` (python, packages, SCEVAN git, pixi.lock hash, thread caps) and `run_manifest.json`.
+The Python package wraps those engines. Call `malignant_id.run.run_malignant_id(...)` or the CLI above. Do not hard-code `/home/y413007/...` in a new-dataset run.
+
+Environment is **the interpreter that is running this process** (`sys.executable`), captured once at run start — not a reconstructed conda name. Each run writes:
+
+- `environment.json` — executable path, prefix, imported module files/versions, thread env, SCEVAN git, pixi.lock hash
+- `requirements.lock.txt` — `python -m pip freeze` of **that same executable**
+- `run_manifest.json`
 
 ## Phase 00 — inspect and pack
 
