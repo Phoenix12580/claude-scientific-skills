@@ -706,3 +706,7 @@ See [LICENSE.md](LICENSE.md) for full terms.
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=K-Dense-AI/claude-scientific-skills&type=date&legend=top-left)](https://www.star-history.com/#K-Dense-AI/claude-scientific-skills&type=date&legend=top-left)
+
+## Additional skill (local add)
+
+`scientific-skills/malignant-id-dual-cnv` — Dual-engine CNV malignant-cell calling (SCEVAN A1 + pyinferCNV B1/B2). Stops after QC/labels; not 3CA/NMF.
